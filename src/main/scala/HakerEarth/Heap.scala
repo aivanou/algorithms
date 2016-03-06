@@ -95,4 +95,3 @@ class MaxHeap[T](mSize: Int, heap: Array[T])(implicit ordering: Ordering[T]) ext
 
   override def getSize: Int = return size
 }
-

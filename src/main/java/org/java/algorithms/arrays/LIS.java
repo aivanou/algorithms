@@ -11,6 +11,10 @@ public class LIS {
     public static void main(String[] args) throws Exception {
         int[] arr = new int[] { 3, 1, 2, 84, 3, 11, 2, 3, 4, 5, 6, 88, 99 };
         System.out.println(Arrays.toString(findLis(arr)));
+        Object obj =null;
+        if(obj==null || obj.hashCode()==0){
+            System.out.println("AL");
+        }
     }
 
     static int[] findLis(int[] arr) {
