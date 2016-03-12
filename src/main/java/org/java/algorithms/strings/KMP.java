@@ -6,7 +6,7 @@ import java.util.Arrays;
  */
 public class KMP {
     public static void main(String[] args) {
-//        System.out.println(find("1234123213221321341234", "213"));
+        System.out.println(find("1234123213221321341234", "213"));
         System.out.println(Arrays.toString(computeLPS("aaabaaa".toCharArray())));
     }
 

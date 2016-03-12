@@ -36,8 +36,6 @@ object Archery {
     for (line <- lines) {
       val lpoint = findHyp(line.p1, Math.ceil)
       val rpoint = findHyp(line.p2, Math.floor)
-//      println(circles(0), circles(circles.length - 1), lpoint, rpoint)
-//      println(findFirstGreaterCircle(lpoint, circles), findFirstLesserCircle(rpoint, circles), line)
       (findFirstGreaterCircle(lpoint, circles), findFirstLesserCircle(rpoint, circles)) match {
         case (l: Circle, r: Circle) => {
           (nestedCircles.get(l.radius), nestedCircles.get(r.radius)) match {

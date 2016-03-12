@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class VeeRoute {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
-        int seed = sc.nextInt();
+        int seed =+ sc.nextInt();
         int na = sc.nextInt();
         int ng = sc.nextInt();
         int no = sc.nextInt();
