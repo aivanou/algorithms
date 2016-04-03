@@ -4,6 +4,7 @@ import java.util.AbstractMap;
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.BiFunction;
 
 /**
  * Segment tree with lazy propagation
@@ -17,7 +18,7 @@ public class SegTree {
         tree.updateRange(3, 7, 1000);
         tree.print();
         System.out.println(tree.querySum(1, 12));
-
+        System.out.println(tree.queryMin(5, 9));
     }
 
     private SNode[] tree;
@@ -28,13 +29,21 @@ public class SegTree {
         build(arr);
     }
 
-    public int querySum(int from, int to) {
-        return querySum(from, to, 0, nleafs, 1);
+    public int queryMax(int from, int to) {
+        return query(from, to, 0, nleafs, 1, (v1, v2) -> Math.max(v1, v2));
     }
 
-    private int querySum(int from, int to, int l, int r, int nodePos) {
+    public int queryMin(int from, int to) {
+        return query(from, to, 0, nleafs, 1, (v1, v2) -> Math.min(v1, v2));
+    }
+
+    public int querySum(int from, int to) {
+        return query(from, to, 0, nleafs, 1, (v1, v2) -> v1 + v2);
+    }
+
+    private int query(int from, int to, int l, int r, int nodePos, BiFunction<Integer, Integer, Integer> operation) {
         if (from > r || to < l || l > r)
-            return 0;
+            return Integer.MIN_VALUE;
         if (lazy[nodePos] != 0) {
             tree[nodePos].sum += (r - l + 1) * lazy[nodePos];
             if (l != r) {
@@ -49,9 +58,13 @@ public class SegTree {
         if (from <= l && to >= r)
             return tree[nodePos].sum;
         int mid = l + (r - l) / 2;
-        int s1 = querySum(from, to, l, mid, left(nodePos));
-        int s2 = querySum(from, to, mid + 1, r, right(nodePos));
-        return s1 + s2;
+        int s1 = query(from, to, l, mid, left(nodePos), operation);
+        int s2 = query(from, to, mid + 1, r, right(nodePos), operation);
+        if (s1 == Integer.MIN_VALUE)
+            return s2;
+        else if (s2 == Integer.MIN_VALUE)
+            return s1;
+        return operation.apply(s1, s2);
     }
 
     public void updateRange(int from, int to, int diff) {

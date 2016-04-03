@@ -11,12 +11,54 @@ import java.util.*;
 public class SuffixArray {
 
     public static void main(String[] args) {
-        String text = "MISSISIPPI";
+        String text = "mississippi";
         int[] sfx = buildSuffixArray(text);
+        System.out.println(Arrays.toString(sfx));
         int[] lcp = computeLcp(text, sfx);
-        for (int i = 0; i < sfx.length; ++i) {
-            System.out.println(sfx[i] + "  " + lcp[i] + "  " + text.substring(sfx[i]));
+        System.out.println(search(text, "ssip"));
+    }
+
+    public static boolean search(String text, String pattern) {
+        int[] sfx = buildSuffixArray(text);
+        int l = 0, r = sfx.length - 1;
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+            int res = 0;
+            for (int i = 0; i < pattern.length(); ++i) {
+                if (sfx[mid] + i > text.length())
+                    return false;
+                if (pattern.charAt(i) > text.charAt(sfx[mid] + i)) {
+                    res = 1;
+                    break;
+                } else if (pattern.charAt(i) < text.charAt(sfx[mid] + i)) {
+                    res = -1;
+                    break;
+                }
+            }
+            if (res == 0)
+                return true;
+            else if (res > 0) {
+                l = mid + 1;
+            } else {
+                r = -mid - 1;
+            }
         }
+        return false;
+    }
+
+    private static int[] zFunction(String text) {
+        int n = text.length();
+        int[] z = new int[n];
+        for (int i = 1, l = 0, r = 0; i < n; ++i) {
+            z[i] = Math.min(r - i + 1, z[i - l]);
+            while (i + z[i] < n && text.charAt(z[i]) == text.charAt(z[i] + i))
+                z[i] += 1;
+            if (z[i] + i - 1 > r) {
+                l = i;
+                r = z[i] + i - 1;
+            }
+        }
+        return z;
     }
 
     private static int[] computeLcp(String text, int[] sfx) {
@@ -62,11 +104,6 @@ public class SuffixArray {
                 }
                 return Integer.compare(s1.rank1, s2.rank1);
             });
-            //            for (int i = 0; i < sfx.length; ++i) {
-            //                System.out.println(suffices[i] + "  " + text.substring(suffices[i].idx));
-            //            }
-            //            System.out.println();
-
             for (int i = 0; i < n; i++)
                 nextSfx[suffices[i].idx] = i > 0 &&
                     suffices[i].rank1 == suffices[i - 1].rank1 &&

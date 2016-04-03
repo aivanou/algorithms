@@ -1,5 +1,8 @@
 package org.scala.algorithms.trees
 
+import scala.annotation.tailrec
+import scala.collection.mutable
+
 object TreeUtils {
 
   def isLeftChild(node: Tree): Boolean = {
@@ -63,6 +66,25 @@ object TreeUtils {
     else return search(root.right, v)
   }
 
+  def levelOrderTraversal(node: Tree): Unit = {
+    val q = mutable.Queue[(Tree, Int)]()
+    q.enqueue((node, 0))
+    var clevel = 0
+    while (!q.isEmpty) {
+      val (nd, level) = q.dequeue()
+      if (clevel != level) {
+        clevel = level
+        println()
+      }
+      if (nd != null) {
+        print(s"${nd.data} ")
+        q.enqueue((nd.left, level + 1))
+        q.enqueue((nd.right, level + 1))
+      }
+    }
+    println()
+  }
+
   def inOrderTraversal(node: Tree, depth: Int): Unit = {
     if (node == null)
       return
@@ -101,9 +123,9 @@ object TreeUtils {
   def checkBSTSatisfaction(root: Tree): Unit = {
     def process(node: Tree): Boolean = {
       if (node == null)
-        true
+        return true
       else if (node.data < node.left.data || node.data > node.right.data)
-        false
+        return false
       process(node.left) && process(node.right)
     }
     process(root)
@@ -131,10 +153,11 @@ object TreeUtils {
 
 
   def main(args: Array[String]): Unit = {
-    val a = Array(1, 2, 3, 4)
+    //    val a = Array(1, 2, 3, 4)
     //    allTreesFromInOrder(a)
-    bstFromSortedArray(a)
+    //    bstFromSortedArray(a)
   }
+
 
 }
 
