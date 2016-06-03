@@ -1,5 +1,9 @@
 package org.java.algorithms.disjoint;
 
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.TreeSet;
+
 /**
  */
 public class DistjointSets {
@@ -11,7 +15,7 @@ public class DistjointSets {
         set.parent[root(set, i1)] = root(set, i2);
     }
 
-    public static boolean find(DSet set, int i1, int i2) {
+     public static boolean find(DSet set, int i1, int i2) {
         return root(set, i1) == root(set, i2);
     }
 

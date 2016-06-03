@@ -114,7 +114,7 @@ public class SegTree {
             return -1;
         int mid = l + (r - l) / 2;
         tree[nodePos].max = Math.max(tree[nodePos].max, value);
-        tree[nodePos].max = Math.min(tree[nodePos].min, value);
+        tree[nodePos].min = Math.min(tree[nodePos].min, value);
         if (l == r) {
             int v = tree[nodePos].sum;
             tree[nodePos].sum = value;

@@ -2,7 +2,7 @@ import java.io.File
 import java.io.FileWriter
 import java.io.PrintWriter
 
-import io.Source
+import scala.io.Source
 import scala.collection.mutable._
 import util.Random
 

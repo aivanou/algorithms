@@ -1,5 +1,7 @@
 package org.java.algorithms.strings;
 
+import java.util.List;
+
 /**
  */
 public class BoyerMoore {

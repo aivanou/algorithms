@@ -3,9 +3,9 @@ package org.java.algorithms.trees;
 /**
  */
 public class TNode {
-    private int v;
-    private TNode left;
-    private TNode right;
+    public int v;
+    public TNode left;
+    public TNode right;
     public int depth;
     public TNode parent;
 
