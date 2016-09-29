@@ -1,40 +1,38 @@
 package org.scala
 
+import scala.collection.mutable
+
 /**
   */
 object Worksheet extends App {
 
 
-  def fib(max: Int): Long = {
-    val arr = new Array[Long](max + 1)
-    arr(1) = 1
-    arr(2) = 1
-    for (ind <- 3 until max) {
-      arr(ind) = arr(ind - 1) + arr(ind - 2)
-    }
-    println(arr.mkString(" "))
-    return 1
-  }
+  val memo = mutable.HashMap[(Int, Boolean, Byte), Long]()
+  memo.put((1, true, 0), 2l)
+  memo.put((1, true, 1), 2l)
+  memo.put((1, true, 2), 1l)
+  memo.put((1, false, 0), 3l)
+  memo.put((1, false, 1), 3l)
+  memo.put((1, false, 2), 2l)
+  var ops = 0;
 
-  def findMaxPrime(st: Long): Long = {
-    var num = st
-    var max = 1L
-    def findPrime(number: Long): Long = {
-      for (ind <- 2L until num) {
-        if (num % ind == 0) {
-          return ind
-        }
+  def getCount(n: Int, containsB: Boolean, endC: Byte): Long = {
+    memo.get((n, containsB, endC)) match {
+      case Some(x) => return x
+      case None => {
+        ops += 1
+        var ans = 0l
+        if (!containsB)
+          ans += getCount(n - 1, true, 0)
+        if (endC < 2)
+          ans += getCount(n - 1, containsB, (endC + 1).toByte)
+        ans += getCount(n - 1, containsB, 0)
+        memo.put((n, containsB, endC), ans)
+        ans
       }
-      return 1
     }
-
-    while (num != 1) {
-      val prime = findPrime(num)
-      println(prime)
-      num = num / prime
-    }
-    return 1L
   }
 
-  findMaxPrime(600851475143L)
+  println(getCount(20, false, 0))
+  println(ops)
 }

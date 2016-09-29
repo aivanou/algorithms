@@ -20,9 +20,20 @@ import java.io.InputStreamReader;
 public class FordFulkenson {
 
     public static void main(String[] args) {
-        int graph[][] = new int[][] { { 0, 16, 13, 0, 0, 0 }, { 0, 0, 10, 12, 0, 0 }, { 0, 4, 0, 0, 14, 0 }, { 0, 0, 9, 0, 0, 20 }, { 0, 0, 0, 7, 0, 4 },
-            { 0, 0, 0, 0, 0, 0 } };
-        System.out.println(findFlow(graph, 0, 5));
+//        int graph[][] = new int[][] {
+//            { 0, 16, 13, 0, 0, 0 },
+//            { 0, 0, 10, 12, 0, 0 },
+//            { 0, 4, 0, 0, 14, 0 },
+//            { 0, 0, 9, 0, 0, 20 },
+//            { 0, 0, 0, 7, 0, 4 },
+//            { 0, 0, 0, 0, 0, 0 } };
+
+        int graph[][] = new int[][] {
+            { 0,1000,1000,0 },
+            { 0,0,1,1000 },
+            { 0,0,0,1000 },
+            { 0, 0, 0,0 }};
+        System.out.println(findFlow(graph, 0, 3));
     }
 
     public static int findFlow(int[][] graph, int s, int t) {
@@ -58,16 +69,16 @@ public class FordFulkenson {
         Queue<Integer> q = new ArrayDeque<>();
         q.add(s);
         parent[s] = -1;
-        visited[s] = true;
         while (!q.isEmpty()) {
             int v = q.poll();
             if (v == t) {
                 return true;
             }
+            if(visited[v]) continue;
+            visited[v]=true;
             for (int i = 0; i < g.length; ++i) {
                 if (!visited[i] && g[v][i] > 0) {
                     q.add(i);
-                    visited[i] = true;
                     parent[i] = v;
                 }
             }
