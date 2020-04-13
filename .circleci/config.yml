@@ -33,6 +33,9 @@ jobs:
   build_publish_docker:
     environment:
       IMAGE_NAME: aivanou/test
+
+    - <<: *publish_docker
+
 #    docker:
 #      - image: circleci/buildpack-deps:stretch
 #
@@ -41,7 +44,6 @@ jobs:
 #
 #      - setup_remote_docker
 
-      - <<: *publish_docker
 
 #  upload_to_pypi:
 #
