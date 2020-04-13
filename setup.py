@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     setup(
         # Metadata
-        name="aivanou/test",
+        name="aivanou",
         version=version,
         author="Aivanou",
         author_email="csivanou@gmail.com",
