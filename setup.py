@@ -11,6 +11,22 @@ import re
 import sys
 
 from setuptools import find_packages, setup
+from setuptools.command.install import install
+
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+    description = 'verify that the git tag matches our version'
+
+    def run(self):
+        tag = os.getenv('CIRCLE_TAG')
+        tag_from_version = f"v{get_version()}"
+
+        if tag != tag_from_version:
+            info = "Git tag: {0} does not match the version: {1}".format(
+                tag, get_version()
+            )
+            sys.exit(info)
 
 
 def get_version():
@@ -56,4 +72,7 @@ if __name__ == "__main__":
         # PyPI package information.
         classifiers=[
         ],
+        cmdclass={
+            'verify': VerifyVersionCommand,
+        }
     )

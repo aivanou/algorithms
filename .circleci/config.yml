@@ -49,9 +49,6 @@ jobs:
     docker:
       - image: circleci/python:3.6
 
-    environment:
-      VERSION: 0.2.0rc1
-
     steps:
       - checkout
 
@@ -83,16 +80,6 @@ jobs:
           command: |
             python3 -m twine upload dist/*
 
-  tag_test:
-    docker:
-      - image: circleci/python:3.6
-
-    steps:
-      - run:
-          command: echo hi
-          name: Test
-
-
 
 workflows:
   main:
@@ -100,12 +87,24 @@ workflows:
       - build-and-test
   circleci-docs-workflow:
     jobs:
-      - tag_test:
+      - build_publish_docker_version:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^config-test.*/
+              only: /^v*/
 
-#      - build_publish_docker_version
-#      - upload_to_pypi
+      - build_publish_docker_latest:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v*/
+
+      - upload_to_pypi:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v*/
+
