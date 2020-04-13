@@ -83,6 +83,16 @@ jobs:
           command: |
             python3 -m twine upload dist/*
 
+  tag_test:
+    docker:
+      - image: circleci/python:3.6
+
+    steps:
+      - run:
+          command: echo hi
+          name: Test
+
+
 
 workflows:
   main:
@@ -94,14 +104,6 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - tag_test2:
-          requires:
-            - tag_test
-          filters:
-            tags:
-              only: /^config-test.*/
-            branches:
-              ignore: /.*/
 
 #      - build_publish_docker_version
 #      - upload_to_pypi
