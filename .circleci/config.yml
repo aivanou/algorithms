@@ -43,56 +43,51 @@ jobs:
 
     <<: *publish_docker
 
-#    docker:
-#      - image: circleci/buildpack-deps:stretch
-#
-#    steps:
-#      - checkout
-#
-#      - setup_remote_docker
 
+  upload_to_pypi:
 
-#  upload_to_pypi:
-#
-#    environment:
-#      VERSION: 0.2.0rc1
-#
-#    steps:
-#      - checkout
-#
-#      # Download and cache dependencies
-#      - restore_cache:
-#          keys:
-#            - v2-cpu-dependencies-{{ checksum "requirements.txt" }}
-#            # fallback to using the latest cache if no exact match is found
-#            - v2-cpu-dependencies-
-#
-#      - run:
-#          name: Setup .pypirc
-#          command: |
-#            echo -e "[pypi]" >> ~/.pypirc
-#            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-#            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-#      - run:
-#          name: Build packages
-#          command: |
-#            python3 setup.py sdist bdist_wheel
-#
-#      - run:
-#          name: Upload packages
-#          command: |
-#            python3 -m twine upload dist/*
-#
-#      - run:
-#          name: Install and assert torchelastic
-#          command: |
-#            pip install torchelastic
-#            python -c "import torchelastic; assert torchelastic.__version__, '$VERSION'"
+    docker:
+      - image: circleci/python:3.6
+
+    environment:
+      VERSION: 0.2.0rc1
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v2-cpu-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v2-cpu-dependencies-
+
+      - run:
+          name: Setup .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: Build packages
+          command: |
+            python3 setup.py sdist bdist_wheel
+
+      - run:
+          name: Upload packages
+          command: |
+            python3 -m twine upload dist/*
+
+      - run:
+          name: Install and assert torchelastic
+          command: |
+            pip install torchelastic
+            python -c "import torchelastic; assert torchelastic.__version__, '$VERSION'"
 
 workflows:
   main:
     jobs:
       - build-and-test
-      - build_publish_docker_latest
-      - build_publish_docker_version
-#      - upload_to_pypi
+#      - build_publish_docker_latest
+#      - build_publish_docker_version
+      - upload_to_pypi
