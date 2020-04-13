@@ -22,7 +22,7 @@ class VerifyVersionCommand(install):
         tag = os.getenv('CIRCLE_TAG')
         tag_from_version = f"v{get_version()}"
 
-        if tag == tag_from_version:
+        if tag != tag_from_version:
             info = "Git tag: {0} does not match the version: {1}".format(
                 tag, get_version()
             )
