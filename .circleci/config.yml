@@ -88,7 +88,9 @@ workflows:
   main:
     jobs:
       - build-and-test
-      - build_publish_docker_latest
+  deploy:
+    jobs:
+      - build_publish_docker_latest:
           filters:
             tags:
               only: /.*/
