@@ -44,6 +44,19 @@ jobs:
     <<: *publish_docker
 
 
+  verify_correct_version:
+    docker:
+      - image: circleci/python:3.6
+
+    steps:
+      - checkout
+
+      - run:
+          name: Verify git tag and version consistency
+          command: |
+            python3 setup.py verify
+
+
   upload_to_pypi:
 
     docker:
@@ -58,11 +71,6 @@ jobs:
             - v2-cpu-dependencies-{{ checksum "requirements.txt" }}
             # fallback to using the latest cache if no exact match is found
             - v2-cpu-dependencies-
-
-      - run:
-          name: Verify git tag and version consistency
-          command: |
-            python3 setup.py verify
 
       - run:
           name: Install python deps
@@ -92,7 +100,16 @@ workflows:
       - build-and-test
   circleci-docs-workflow:
     jobs:
+      - verify_correct_version:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
       - build_publish_docker_version:
+          requires:
+            - verify_correct_version
           filters:
             branches:
               ignore: /.*/
@@ -100,6 +117,8 @@ workflows:
               only: /^v.*/
 
       - build_publish_docker_latest:
+          requires:
+            - verify_correct_version
           filters:
             branches:
               ignore: /.*/
@@ -107,6 +126,8 @@ workflows:
               only: /^v.*/
 
       - upload_to_pypi:
+          requires:
+            - verify_correct_version
           filters:
             branches:
               ignore: /.*/
