@@ -5,11 +5,11 @@ orbs:
 
 publish_docker: &publish_docker
   - run:
-    name: Build Docker image
-    command: |
-      docker build -t $IMAGE_NAME:latest .
-      echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      docker push $IMAGE_NAME:latest
+      name: Build Docker image
+      command: |
+        docker build -t $IMAGE_NAME:latest .
+        echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        docker push $IMAGE_NAME:latest
 
 jobs:
   build-and-test:
@@ -31,7 +31,9 @@ jobs:
 
     steps:
       - checkout
+
       - setup_remote_docker
+
       - <<: *publish_docker
 
   upload_to_pypi:
