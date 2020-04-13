@@ -4,19 +4,18 @@ orbs:
   python: circleci/python@0.2.1
 
 publish_docker: &publish_docker
-    docker:
-      - image: circleci/buildpack-deps:stretch
+  docker:
+    - image: circleci/buildpack-deps:stretch
 
-    steps:
-      - checkout
-
-      - setup_remote_docker
-      - run:
-          name: Build Docker image
-          command: |
-            docker build -t $IMAGE_NAME:latest .
-            echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            docker push $IMAGE_NAME:latest
+  steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Build Docker image
+        command: |
+          docker build -t $IMAGE_NAME:$VERSION .
+          echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          docker push $IMAGE_NAME:$VERSION
 
 jobs:
   build-and-test:
@@ -33,8 +32,9 @@ jobs:
   build_publish_docker:
     environment:
       IMAGE_NAME: aivanou/test
+      VERSION: latest
 
-    - <<: *publish_docker
+    <<: *publish_docker
 
 #    docker:
 #      - image: circleci/buildpack-deps:stretch
