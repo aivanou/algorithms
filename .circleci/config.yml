@@ -29,10 +29,17 @@ jobs:
           command: python -c "import numpy; print(numpy.__version__)" 
           name: Test
 
-  build_publish_docker:
+  build_publish_docker_latest:
     environment:
       IMAGE_NAME: aivanou/test
       VERSION: latest
+
+    <<: *publish_docker
+
+  build_publish_docker_version:
+    environment:
+      IMAGE_NAME: aivanou/test
+      VERSION: 0.2.0rc0
 
     <<: *publish_docker
 
@@ -86,5 +93,6 @@ workflows:
   main:
     jobs:
       - build-and-test
-      - build_publish_docker
+      - build_publish_docker_latest
+      - build_publish_docker_version
 #      - upload_to_pypi
