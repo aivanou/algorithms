@@ -1,21 +1,9 @@
-version: 2.1
+version: 2
 
-orbs:
-  python: circleci/python@0.2.1
+#orbs:
+#  python: circleci/python@0.2.1
 
-jobs:
-  build-and-test:
-    executor: python/default
-    steps:
-      - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
-      - run:
-          command: python -c "import numpy; print(numpy.__version__)" 
-          name: Test
-
-  publish_docker:
+publish_docker: &publish_docker
     environment:
       IMAGE_NAME: aivanou/test
     docker:
@@ -31,9 +19,63 @@ jobs:
             echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             docker push $IMAGE_NAME:latest
 
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          command: python -c "import numpy; print(numpy.__version__)" 
+          name: Test
+
+  publish_docker:
+    environment:
+        VERSION: latest
+    <<: *publish_docker
+
+  upload_to_pypi:
+
+    environment:
+      VERSION: 0.2.0rc1
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v2-cpu-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v2-cpu-dependencies-
+
+      - run:
+          name: Setup .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: Build packages
+          command: |
+            python3 setup.py sdist bdist_wheel
+
+      - run:
+          name: Upload packages
+          command: |
+            python3 -m twine upload dist/*
+
+      - run:
+          name: Install and assert torchelastic
+          command: |
+            pip install torchelastic
+            python -c "import torchelastic; assert torchelastic.__version__, '$VERSION'"
 
 workflows:
   main:
     jobs:
       - build-and-test
       - publish_docker
+#      - upload_to_pypi
