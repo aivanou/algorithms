@@ -13,9 +13,16 @@ publish_docker: &publish_docker
     - run:
         name: Build Docker image
         command: |
-          docker build -t $IMAGE_NAME:$VERSION .
+          if [[ -z ${CIRCLE_TAG} ]]; then
+            echo "ERROR: the workflow should only be executed on the tag"
+            exit 1
+          fi
+          publish_version=${CIRCLE_TAG#"v."}
+          echo "Buiding image $IMAGE_NAME:$publish_version"
+          docker build -t $IMAGE_NAME:$publish_version .
           echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          docker push $IMAGE_NAME:$VERSION
+          echo "Pushing image $IMAGE_NAME:$publish_version to docker hub"
+          docker push $IMAGE_NAME:$publish_version
 
 jobs:
   build-and-test:
