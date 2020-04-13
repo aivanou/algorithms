@@ -102,6 +102,8 @@ workflows:
     jobs:
       - tag_test:
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /^config-test.*/
 
