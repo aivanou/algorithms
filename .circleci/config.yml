@@ -92,19 +92,19 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v*/
+              only: /^v.*/
 
       - build_publish_docker_latest:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^v*/
+              only: /^v.*/
 
       - upload_to_pypi:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^v*/
+              only: /^v.*/
 
