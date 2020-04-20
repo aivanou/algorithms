@@ -46,7 +46,6 @@ jobs:
           name: run test2
           command: |
             bash ./scripts/setup_env_variables.sh
-            source ~/env
       - run:
           command: echo $BASE_BUILD_VERSION
           name: Test
