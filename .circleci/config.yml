@@ -66,12 +66,12 @@ jobs:
 
     <<: *publish_docker
 
-    build_publish_docker_version:
-      environment:
-        IMAGE_NAME: aivanou/test
-        VERSION: 0.2.0rc0
+  build_publish_docker_version:
+    environment:
+      IMAGE_NAME: aivanou/test
+      VERSION: 0.2.0rc0
 
-      <<: *publish_docker
+    <<: *publish_docker
 
 
   verify_correct_version:
@@ -87,41 +87,41 @@ jobs:
             python3 setup.py verify
 
 
-  upload_to_pypi:
-
-    docker:
-      - image: circleci/python:3.6
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v2-cpu-dependencies-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v2-cpu-dependencies-
-
-      - run:
-          name: Install python deps
-          command: |
-            sudo pip install twine
-
-      - run:
-          name: Setup .pypirc
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            echo -e "password = $PYPI_PWD" >> ~/.pypirc
-      - run:
-          name: Build packages
-          command: |
-            python3 setup.py sdist bdist_wheel
-
-      - run:
-          name: Upload packages
-          command: |
-            python3 -m twine upload dist/*
+#  upload_to_pypi:
+#
+#    docker:
+#      - image: circleci/python:3.6
+#
+#    steps:
+#      - checkout
+#
+#      # Download and cache dependencies
+#      - restore_cache:
+#          keys:
+#            - v2-cpu-dependencies-{{ checksum "requirements.txt" }}
+#            # fallback to using the latest cache if no exact match is found
+#            - v2-cpu-dependencies-
+#
+#      - run:
+#          name: Install python deps
+#          command: |
+#            sudo pip install twine
+#
+#      - run:
+#          name: Setup .pypirc
+#          command: |
+#            echo -e "[pypi]" >> ~/.pypirc
+#            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+#            echo -e "password = $PYPI_PWD" >> ~/.pypirc
+#      - run:
+#          name: Build packages
+#          command: |
+#            python3 setup.py sdist bdist_wheel
+#
+#      - run:
+#          name: Upload packages
+#          command: |
+#            python3 -m twine upload dist/*
 
 
 workflows:
@@ -130,7 +130,6 @@ workflows:
       - build-and-test
   circleci-docs-workflow:
     jobs:
-      - build-and-test:
       - verify_correct_version:
           filters:
             branches:
@@ -156,12 +155,12 @@ workflows:
             tags:
               only: /^v.*/
 
-      - upload_to_pypi:
-          requires:
-            - verify_correct_version
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+#      - upload_to_pypi:
+#          requires:
+#            - verify_correct_version
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^v.*/
 
