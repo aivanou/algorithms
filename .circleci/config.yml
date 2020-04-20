@@ -43,17 +43,18 @@ jobs:
           command: |
             pwd
       - run:
-          name: run test1
-          command: |
-            t="ls -la"
-            eval $t
-      - run:
           name: run test2
           command: |
             bash ./scripts/setup_env_variables.sh
       - run:
           command: echo $BASE_BUILD_VERSION
           name: Test
+      - run:
+          name: run test1
+          command: |
+            t="ls -la"
+            eval $t
+            cat ./env
 
   build_publish_docker_latest:
     environment:

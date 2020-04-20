@@ -21,7 +21,7 @@ fi
 # steps, but the location of the envfile depends on the circleci executor
 if [[ "$(uname)" == Darwin ]]; then
   # macos executor (builds and tests)
-  workdir="/Users/distiller/algorithms"
+  workdir="/Users/aivanou/code/algorithms"
 elif [[ -d "/home/circleci/algorithms" ]]; then
   # machine executor (binary tests)
   workdir="/home/circleci/algorithms"
@@ -33,7 +33,7 @@ envfile="$workdir/env"
 touch "$envfile"
 chmod +x "$envfile"
 
-cat >>"$envfile" <<EOL
+cat >>"$envfile" <<END
 # =================== The following code will be executed inside Docker container ===================
 export TZ=UTC
 echo "Running on $(uname -a) at $(date)"
@@ -45,7 +45,7 @@ export CIRCLE_SHA1="$CIRCLE_SHA1"
 export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-}"
 export CIRCLE_BRANCH="$CIRCLE_BRANCH"
 # =================== The above code will be executed inside Docker container ===================
-EOL
+END
 
 echo 'retry () {' >>"$envfile"
 echo '    $*  || (sleep 1 && $*) || (sleep 2 && $*) || (sleep 4 && $*) || (sleep 8 && $*)' >>"$envfile"
@@ -53,3 +53,5 @@ echo '}' >>"$envfile"
 echo 'export -f retry' >>"$envfile"
 
 cat "$envfile"
+
+eval "$envfile"
