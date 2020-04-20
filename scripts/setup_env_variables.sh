@@ -34,7 +34,6 @@ touch "$envfile"
 chmod +x "$envfile"
 
 cat >>"$envfile" <<END
-# =================== The following code will be executed inside Docker container ===================
 export TZ=UTC
 echo "Running on $(uname -a) at $(date)"
 
@@ -44,14 +43,6 @@ export CIRCLE_TAG="${CIRCLE_TAG:-}"
 export CIRCLE_SHA1="$CIRCLE_SHA1"
 export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-}"
 export CIRCLE_BRANCH="$CIRCLE_BRANCH"
-# =================== The above code will be executed inside Docker container ===================
 END
 
-echo 'retry () {' >>"$envfile"
-echo '    $*  || (sleep 1 && $*) || (sleep 2 && $*) || (sleep 4 && $*) || (sleep 8 && $*)' >>"$envfile"
-echo '}' >>"$envfile"
-echo 'export -f retry' >>"$envfile"
-
-cat "$envfile"
-
-eval "$envfile"
+source $envfile
