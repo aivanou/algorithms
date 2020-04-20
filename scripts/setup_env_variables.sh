@@ -45,4 +45,4 @@ export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-}"
 export CIRCLE_BRANCH="$CIRCLE_BRANCH"
 END
 
-source $envfile
+cat $envfile
