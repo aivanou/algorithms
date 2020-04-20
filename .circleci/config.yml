@@ -39,6 +39,10 @@ jobs:
           command: python -c "import numpy; print(numpy.__version__)"
           name: Test
       - run:
+          name: run test0
+          command: |
+            pwd
+      - run:
           name: run test1
           command: |
             t="ls -la"

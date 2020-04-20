@@ -17,6 +17,22 @@ if tagged_version >/dev/null; then
   TORCHELASTIC_BUILD_VERSION="$(tagged_version)"
 fi
 
+# We need to write an envfile to persist these variables to following
+# steps, but the location of the envfile depends on the circleci executor
+if [[ "$(uname)" == Darwin ]]; then
+  # macos executor (builds and tests)
+  workdir="/Users/distiller/algorithms"
+elif [[ -d "/home/circleci/algorithms" ]]; then
+  # machine executor (binary tests)
+  workdir="/home/circleci/algorithms"
+else
+  # docker executor (binary builds)
+  workdir="/"
+fi
+envfile="$workdir/env"
+touch "$envfile"
+chmod +x "$envfile"
+
 cat >>"$envfile" <<EOL
 # =================== The following code will be executed inside Docker container ===================
 export TZ=UTC
