@@ -20,14 +20,18 @@ class VerifyVersionCommand(install):
     description = 'verify that the git tag matches our version'
 
     def run(self):
-        myvar = os.getenv('MY_VAR')
-        print('myvar: ', myvar)
-        tag = os.getenv('TORCHELASTIC_BUILD_VERSION')
-        tag_from_version = f"v{get_version()}"
+        if 'BASE_BUILD_VERSION' not in os.environ:
+            info = "Setup BASE_BUILD_VERSION variable to run verify command"
+            sys.exit(info)
 
-        if tag != tag_from_version:
+        base_version = os.getenv('BASE_BUILD_VERSION')
+        if base_version[0] == 'v':
+            base_version = base_version[1:]
+        file_version = f"{get_version()}"
+
+        if base_version != file_version:
             info = "Git tag: {0} does not match the version: {1}".format(
-                tag, get_version()
+                base_version, file_version
             )
             sys.exit(info)
 
@@ -42,7 +46,7 @@ def get_version():
     except Exception:
         pass
 
-    if 'TORCHELASTIC_BUILD_VERSION' not in os.environ and sha != 'Unknown':
+    if 'BASE_BUILD_VERSION' not in os.environ and sha != 'Unknown':
         version = f"{version}+{sha[:7]}"
 
     return version

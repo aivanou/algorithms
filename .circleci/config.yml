@@ -3,6 +3,24 @@ version: 2.1
 orbs:
   python: circleci/python@0.2.1
 
+
+setup_env_variables: &setup_env_variables
+  - run:
+      name: Setup env variables
+      command: |
+        tagged_version() {
+          # Grabs version from either the env variable CIRCLE_TAG
+          if [[ -n "${CIRCLE_TAG}" ]]; then
+            echo "${CIRCLE_TAG}"
+          else
+            eval 'cat ./version.txt'
+          fi
+        }
+
+        BASE_BUILD_VERSION="$(tagged_version)"
+        echo "export BASE_BUILD_VERSION=$BASE_BUILD_VERSION" >> $BASH_ENV
+
+
 publish_docker: &publish_docker
   docker:
     - image: circleci/buildpack-deps:stretch
@@ -29,25 +47,11 @@ jobs:
     executor: python/default
     working_directory: ~/algorithms
     steps:
-      #      - attach_workspace:
-      #          at: /home/circleci/project
       - checkout
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run:
-          name: Setup Environment Variables
-          command: |
-            echo "export MY_VAR=TEST" >> $BASH_ENV
-
-      - run:
-          name: Read Environment Variables
-          command: |
-            echo $MY_VAR
-      - run:
-          name: Read Environment Variables
-          command: |
-            echo $MY_VAR
+      <<: *setup_env_variables
       - run:
           name: Verify git tag and version consistency
           command: |
