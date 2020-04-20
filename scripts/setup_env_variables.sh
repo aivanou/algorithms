@@ -8,7 +8,7 @@ tagged_version() {
   fi
 }
 
-TORCHELASTIC_BUILD_VERSION='cat ./version.txt'
+BASE_BUILD_VERSION='cat ./version.txt'
 
 if tagged_version >/dev/null; then
   # Grab git tag, remove prefixed v and remove everything after -
@@ -38,7 +38,7 @@ cat >>"$envfile" <<EOL
 export TZ=UTC
 echo "Running on $(uname -a) at $(date)"
 
-export TORCHELASTIC_BUILD_VERSION="TORCHELASTIC_BUILD_VERSION"
+export BASE_BUILD_VERSION="BASE_BUILD_VERSION"
 
 export CIRCLE_TAG="${CIRCLE_TAG:-}"
 export CIRCLE_SHA1="$CIRCLE_SHA1"
