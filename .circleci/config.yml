@@ -27,13 +27,28 @@ publish_docker: &publish_docker
 jobs:
   build-and-test:
     executor: python/default
+    working_directory: ~/algorithms
     steps:
+      #      - attach_workspace:
+      #          at: /home/circleci/project
       - checkout
       - python/load-cache
       - python/install-deps
       - python/save-cache
       - run:
           command: python -c "import numpy; print(numpy.__version__)"
+          name: Test
+      - run:
+          name: run test1
+          command: |
+            t="ls -la"
+            eval $t
+      - run:
+          name: run test2
+          command: |
+            bash ./scripts/setup_env_variables.sh
+      - run:
+          command: echo $BASE_BUILD_VERSION
           name: Test
 
   build_publish_docker_latest:
@@ -43,12 +58,19 @@ jobs:
 
     <<: *publish_docker
 
-  build_publish_docker_version:
-    environment:
-      IMAGE_NAME: aivanou/test
-      VERSION: 0.2.0rc0
+  #  build_publish_docker_version:
+  #    environment:
+  #      IMAGE_NAME: aivanou/test
+  #      VERSION: 0.2.0rc0
+  #    steps:
+  #
+  #      - run:
+  #            name: run test
+  #            command: |
+  #              bash ./scripts/setup_env_variables.sh
 
-    <<: *publish_docker
+
+  #    <<: *publish_docker
 
 
   verify_correct_version:
@@ -57,7 +79,6 @@ jobs:
 
     steps:
       - checkout
-
       - run:
           name: Verify git tag and version consistency
           command: |
@@ -107,37 +128,46 @@ workflows:
       - build-and-test
   circleci-docs-workflow:
     jobs:
-      - verify_correct_version:
+      - build-and-test:
+          #          requires:
+          #            - verify_correct_version
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^v.*/
 
-      - build_publish_docker_version:
-          requires:
-            - verify_correct_version
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+#      - verify_correct_version:
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^v.*/
 
-      - build_publish_docker_latest:
-          requires:
-            - verify_correct_version
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+#      - build_publish_docker_version:
+#          requires:
+#            - verify_correct_version
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^v.*/
 
-      - upload_to_pypi:
-          requires:
-            - verify_correct_version
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
+#      - build_publish_docker_latest:
+#          requires:
+#            - verify_correct_version
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^v.*/
+#
+#      - upload_to_pypi:
+#          requires:
+#            - verify_correct_version
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^v.*/
+#

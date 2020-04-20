@@ -9,6 +9,7 @@
 import os
 import re
 import sys
+import subprocess
 
 from setuptools import find_packages, setup
 from setuptools.command.install import install
@@ -19,7 +20,7 @@ class VerifyVersionCommand(install):
     description = 'verify that the git tag matches our version'
 
     def run(self):
-        tag = os.getenv('CIRCLE_TAG')
+        tag = os.getenv('TORCHELASTIC_BUILD_VERSION')
         tag_from_version = f"v{get_version()}"
 
         if tag != tag_from_version:
@@ -31,12 +32,18 @@ class VerifyVersionCommand(install):
 
 def get_version():
     # get version string from version.py
-    # TODO: ideally the version.py should be generated when setup is run
-    version_file = os.path.join(os.path.dirname(__file__), "version.py")
-    version_regex = r"__version__ = ['\"]([^'\"]*)['\"]"
-    with open(version_file, "r") as f:
-        version = re.search(version_regex, f.read(), re.M).group(1)
-        return version
+    version = open('version.txt', 'r').read().strip()
+    sha = 'Unknown'
+    try:
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).decode('ascii').strip()
+    except Exception:
+        pass
+
+    if 'TORCHELASTIC_BUILD_VERSION' not in os.environ and sha != 'Unknown':
+        version = f"{version}+{sha[:7]}"
+
+    return version
 
 
 if __name__ == "__main__":
