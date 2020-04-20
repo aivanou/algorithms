@@ -20,6 +20,8 @@ class VerifyVersionCommand(install):
     description = 'verify that the git tag matches our version'
 
     def run(self):
+        myvar = os.getenv('MY_VAR')
+        print('myvar: ', myvar)
         tag = os.getenv('TORCHELASTIC_BUILD_VERSION')
         tag_from_version = f"v{get_version()}"
 

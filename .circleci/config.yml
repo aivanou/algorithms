@@ -36,25 +36,22 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: python -c "import numpy; print(numpy.__version__)"
-          name: Test
-      - run:
-          name: run test0
+          name: Setup Environment Variables
           command: |
-            pwd
+            echo "export MY_VAR=TEST" >> $BASH_ENV
+
       - run:
-          name: run test2
+          name: Read Environment Variables
           command: |
-            bash ./scripts/setup_env_variables.sh
+            echo $MY_VAR
       - run:
-          command: echo $BASE_BUILD_VERSION
-          name: Test
-      - run:
-          name: run test1
+          name: Read Environment Variables
           command: |
-            t="ls -la"
-            eval $t
-            cat ./env
+            echo $MY_VAR
+      - run:
+          name: Verify git tag and version consistency
+          command: |
+            python3 setup.py verify
 
   build_publish_docker_latest:
     environment:
