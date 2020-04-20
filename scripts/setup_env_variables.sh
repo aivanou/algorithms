@@ -33,16 +33,15 @@ envfile="$workdir/env"
 touch "$envfile"
 chmod +x "$envfile"
 
-cat >>"$envfile" <<END
 export TZ=UTC
 echo "Running on $(uname -a) at $(date)"
 
-export BASE_BUILD_VERSION="BASE_BUILD_VERSION"
+#export BASE_BUILD_VERSION="BASE_BUILD_VERSION"
+#
+#export CIRCLE_TAG="${CIRCLE_TAG:-}"
+#export CIRCLE_SHA1="$CIRCLE_SHA1"
+#export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-}"
+#export CIRCLE_BRANCH="$CIRCLE_BRANCH"
 
-export CIRCLE_TAG="${CIRCLE_TAG:-}"
-export CIRCLE_SHA1="$CIRCLE_SHA1"
-export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-}"
-export CIRCLE_BRANCH="$CIRCLE_BRANCH"
-END
-
-cat $envfile
+echo 'export BASE_BUILD_VERSION=$BASE_BUILD_VERSION' >>$BASH_ENV
+source $BASH_ENV
