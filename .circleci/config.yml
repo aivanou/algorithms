@@ -60,6 +60,9 @@ jobs:
             python3 setup.py verify
 
   build_publish_docker_version:
+    environment:
+      IMAGE_NAME: aivanou/test
+
     docker:
       - image: circleci/buildpack-deps:stretch
 
