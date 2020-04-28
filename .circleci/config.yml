@@ -19,8 +19,7 @@ setup_env_variables: &setup_env_variables
         }
 
         BASE_BUILD_VERSION="$(tagged_version)"
-        # Since the tag starts with the 'v' we remove the first symbol to get version.
-        BASE_BUILD_VERSION=${BASE_BUILD_VERSION}
+        echo "Setting BASE_BUILD_VERSION as $BASE_BUILD_VERSION"
         echo "export BASE_BUILD_VERSION=$BASE_BUILD_VERSION" >> $BASH_ENV
 
 
@@ -38,11 +37,12 @@ publish_docker: &publish_docker
             echo "ERROR: the workflow should only be executed on the tag"
             exit 1
           fi
-          echo "Buiding image $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION"
-          docker build -t $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION .
+          echo "Buiding image $IMAGE_NAME:$BASE_BUILD_VERSION"
+          docker build -t $IMAGE_NAME:$BASE_BUILD_VERSION .
+          echo "Using docker username: $DOCKER_USERNAME"
           echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          echo "Pushing image $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION to docker hub"
-          docker push $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION
+          echo "Pushing image $IMAGE_NAME:$BASE_BUILD_VERSION to docker hub"
+          docker push $IMAGE_NAME:$BASE_BUILD_VERSION
 
 jobs:
   build-and-test:
