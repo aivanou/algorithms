@@ -11,8 +11,8 @@ setup_env_variables: &setup_env_variables
         tagged_version() {
           # Grabs version from either the env variable CIRCLE_TAG
           # Note: we assume that all tags start with prefix 'v'
-          if [[ -n "${CIRCLE_TAG}#v" ]]; then
-            echo "${CIRCLE_TAG}"
+          if [[ -n "${CIRCLE_TAG}" ]]; then
+            echo "${CIRCLE_TAG#v}"
           else
             eval 'cat ./version.txt'
           fi
@@ -37,6 +37,11 @@ publish_docker: &publish_docker
             echo "ERROR: the workflow should only be executed on the tag"
             exit 1
           fi
+          if [[ -z ${BASE_BUILD_VERSION} ]]; then
+            echo "ERROR: Set up the base build version by running setup_env_variables macros"
+            exit 1
+          fi
+
           echo "Buiding image $IMAGE_NAME:$BASE_BUILD_VERSION"
           docker build -t $IMAGE_NAME:$BASE_BUILD_VERSION .
           echo "Using docker username: $DOCKER_USERNAME"
