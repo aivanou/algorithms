@@ -151,12 +151,13 @@ workflows:
             tags:
               only: /^v.*/
 
-#      - upload_to_pypi:
-#          requires:
-#            - verify_correct_version
-#          filters:
-#            branches:
-#              ignore: /.*/
-#            tags:
-#              only: /^v.*/
+      - upload_to_pypi:
+          context: test_ctx
+          requires:
+            - verify_correct_version
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
 
