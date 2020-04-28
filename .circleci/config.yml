@@ -69,7 +69,7 @@ jobs:
 
   verify_correct_version:
     docker:
-      - image: default
+      - image: circleci/python:3.6
 
     steps:
       - checkout
