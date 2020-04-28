@@ -10,7 +10,8 @@ setup_env_variables: &setup_env_variables
       command: |
         tagged_version() {
           # Grabs version from either the env variable CIRCLE_TAG
-          if [[ -n "${CIRCLE_TAG}" ]]; then
+          # Note: we assume that all tags start with prefix 'v'
+          if [[ -n "${CIRCLE_TAG}#v" ]]; then
             echo "${CIRCLE_TAG}"
           else
             eval 'cat ./version.txt'
@@ -19,7 +20,7 @@ setup_env_variables: &setup_env_variables
 
         BASE_BUILD_VERSION="$(tagged_version)"
         # Since the tag starts with the 'v' we remove the first symbol to get version.
-        TORCHELASTIC_BUILD_VERSION=${BASE_BUILD_VERSION:1}
+        BASE_BUILD_VERSION=${BASE_BUILD_VERSION}
         echo "export BASE_BUILD_VERSION=$BASE_BUILD_VERSION" >> $BASH_ENV
 
 
@@ -37,12 +38,11 @@ publish_docker: &publish_docker
             echo "ERROR: the workflow should only be executed on the tag"
             exit 1
           fi
-          publish_version=${CIRCLE_TAG#"v."}
-          echo "Buiding image $IMAGE_NAME:$publish_version"
-          docker build -t $IMAGE_NAME:$publish_version .
+          echo "Buiding image $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION"
+          docker build -t $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION .
           echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          echo "Pushing image $IMAGE_NAME:$publish_version to docker hub"
-          docker push $IMAGE_NAME:$publish_version
+          echo "Pushing image $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION to docker hub"
+          docker push $IMAGE_NAME:$TORCHELASTIC_BUILD_VERSION
 
 jobs:
   build-and-test:
@@ -59,13 +59,6 @@ jobs:
           command: |
             python3 setup.py verify
 
-  build_publish_docker_latest:
-    environment:
-      IMAGE_NAME: aivanou/test
-      VERSION: latest
-
-    <<: *publish_docker
-
   build_publish_docker_version:
     environment:
       IMAGE_NAME: aivanou/test
@@ -76,7 +69,7 @@ jobs:
 
   verify_correct_version:
     docker:
-      - image: circleci/python:3.6
+      - image: default
 
     steps:
       - checkout
@@ -147,21 +140,12 @@ workflows:
             tags:
               only: /^v.*/
 
-      - build_publish_docker_latest:
-          requires:
-            - verify_correct_version
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-
-      - upload_to_pypi:
-          requires:
-            - verify_correct_version
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+#      - upload_to_pypi:
+#          requires:
+#            - verify_correct_version
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /^v.*/
 
