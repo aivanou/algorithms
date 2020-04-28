@@ -24,30 +24,25 @@ setup_env_variables: &setup_env_variables
 
 
 publish_docker: &publish_docker
-  docker:
-    - image: circleci/buildpack-deps:stretch
 
-  steps:
-    - checkout
-    - setup_remote_docker
-    - run:
-        name: Build Docker image
-        command: |
-          if [[ -z ${CIRCLE_TAG} ]]; then
-            echo "ERROR: the workflow should only be executed on the tag"
-            exit 1
-          fi
-          if [[ -z ${BASE_BUILD_VERSION} ]]; then
-            echo "ERROR: Set up the base build version by running setup_env_variables macros"
-            exit 1
-          fi
+  - run:
+      name: Build Docker image
+      command: |
+        if [[ -z ${CIRCLE_TAG} ]]; then
+          echo "ERROR: the workflow should only be executed on the tag"
+          exit 1
+        fi
+        if [[ -z ${BASE_BUILD_VERSION} ]]; then
+          echo "ERROR: Set up the base build version by running setup_env_variables macros"
+          exit 1
+        fi
 
-          echo "Buiding image $IMAGE_NAME:$BASE_BUILD_VERSION"
-          docker build -t $IMAGE_NAME:$BASE_BUILD_VERSION .
-          echo "Using docker username: $DOCKER_USERNAME"
-          echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          echo "Pushing image $IMAGE_NAME:$BASE_BUILD_VERSION to docker hub"
-          docker push $IMAGE_NAME:$BASE_BUILD_VERSION
+        echo "Buiding image $IMAGE_NAME:$BASE_BUILD_VERSION"
+        docker build -t $IMAGE_NAME:$BASE_BUILD_VERSION .
+        echo "Using docker username: $DOCKER_USERNAME"
+        echo "$DOCKER_PWD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        echo "Pushing image $IMAGE_NAME:$BASE_BUILD_VERSION to docker hub"
+        docker push $IMAGE_NAME:$BASE_BUILD_VERSION
 
 jobs:
   build-and-test:
@@ -65,11 +60,17 @@ jobs:
             python3 setup.py verify
 
   build_publish_docker_version:
-    environment:
-      IMAGE_NAME: aivanou/test
-      VERSION: 0.2.0rc0
+    docker:
+      - image: circleci/buildpack-deps:stretch
 
-    <<: *publish_docker
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      - <<: *setup_env_variables
+
+      - <<: *publish_docker
 
 
   verify_correct_version:
@@ -130,6 +131,7 @@ workflows:
   circleci-docs-workflow:
     jobs:
       - verify_correct_version:
+          context: test_ctx
           filters:
             branches:
               ignore: /.*/
@@ -137,6 +139,7 @@ workflows:
               only: /^v.*/
 
       - build_publish_docker_version:
+          context: test_ctx
           requires:
             - verify_correct_version
           filters:
